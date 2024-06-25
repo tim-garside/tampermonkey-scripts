@@ -6,6 +6,8 @@
 // @author       Tim Garside
 // @match        https://canvas.newcastle.edu.au/courses/*/pages/*/edit
 // @match        https://canvas.newcastle.edu.au/courses/*/pages
+// @updateURL    https://github.com/tim-garside/tampermonkey-scripts/raw/main/Selection%20to%20Block.user.js
+// @downloadURL  https://github.com/tim-garside/tampermonkey-scripts/raw/main/Selection%20to%20Block.user.js
 // @grant        none
 // ==/UserScript==
 
