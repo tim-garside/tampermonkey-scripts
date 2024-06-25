@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Selection to Block
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  To accommodate for the removal of the 'Selection to Block' functionality in CidiLabs Sidebar. This wraps the selected text in a div with class 'dp-content-block' when the button is clicked
 // @author       Tim Garside
 // @match        https://canvas.newcastle.edu.au/courses/*/pages/*/edit
@@ -11,7 +11,6 @@
 
 (function() {
 	'use strict';
-
 	// Custom classes
 	const classDPWrapper = "dp-wrapper"; // Customise as required.
 	const classUONTheme = "kl_uon"; // Customise as required.
@@ -23,6 +22,7 @@
 
 	// Function to create and style the button
 	function createButton() {
+		console.log('Button Created')
 		const button = document.createElement('button');
 		button.setAttribute('aria-label', 'Selection to Block');
 		button.setAttribute('title', 'Selection to Block');
