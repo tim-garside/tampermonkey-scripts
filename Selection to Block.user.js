@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Selection to Block
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  To accommodate for the removal of the 'Selection to Block' functionality in CidiLabs Sidebar. This wraps the selected text in a div with class 'dp-content-block' when the button is clicked
 // @author       Tim Garside
 // @match        https://canvas.newcastle.edu.au/courses/*/pages/*/edit
 // @match        https://canvas.newcastle.edu.au/courses/*/pages
-// @updateURL    https://github.com/tim-garside/tampermonkey-scripts/raw/main/Selection%20to%20Block.user.js
-// @downloadURL  https://github.com/tim-garside/tampermonkey-scripts/raw/main/Selection%20to%20Block.user.js
+// @updateURL    https://dsgs5i5n0ylvb.cloudfront.net/selection-to-block.user.js?auth=WfuYhBQmlMrkJMvoAODrEB0xvBxKxdMUipsbJOia2XSfEwDLwQoWi0N29kqBP8VjyWyZe4xT8bfI8vRscO7svg==
+// @downloadURL  https://dsgs5i5n0ylvb.cloudfront.net/selection-to-block.user.js?auth=WfuYhBQmlMrkJMvoAODrEB0xvBxKxdMUipsbJOia2XSfEwDLwQoWi0N29kqBP8VjyWyZe4xT8bfI8vRscO7svg==
 // @grant        none
 // ==/UserScript==
 
