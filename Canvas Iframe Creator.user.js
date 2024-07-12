@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Canvas Iframe Creator
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Searches Canvas files area to create an iframe embed for HTML files.
 // @author       You
 // @match        https://canvas.newcastle.edu.au/courses/*/pages/*/edit
