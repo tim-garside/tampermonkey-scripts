@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Strawpoll Canvas Embed
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Modifies the embed code on Strawpoll, adds a custom button, and copies to clipboard
 // @match        https://strawpoll.com/*
 // @grant        none
