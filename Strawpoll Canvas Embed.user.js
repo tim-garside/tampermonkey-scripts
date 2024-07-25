@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Strawpoll Canvas Embed
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Modifies the embed code on Strawpoll, adds a custom button, and copies to clipboard
 // @match        https://strawpoll.com/*
 // @grant        none
@@ -50,13 +50,6 @@
                 console.error('Failed to copy text: ', err);
                 alert('Failed to copy embed code. Please try again.');
             });
-
-            // Update the textarea with the new embed code
-            textarea.value = embedCode;
-
-            // Trigger an input event to ensure any bound listeners are notified
-            const event = new Event('input', { bubbles: true });
-            textarea.dispatchEvent(event);
         });
     }
 
