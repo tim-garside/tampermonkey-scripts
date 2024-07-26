@@ -40,7 +40,7 @@
             embedCode = embedCode.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 
             // Wrap the remaining code in a div with class "dp-embed-wraper"
-            embedCode = `<div class="dp-embed-wraper">${embedCode}</div>`;
+            embedCode = `<div class="dp-embed-wrapper">${embedCode}</div>`;
 
             // Copy the new embed code to clipboard
             navigator.clipboard.writeText(embedCode).then(function() {
