@@ -107,7 +107,7 @@
 
 
 
-    function Export2Word(texts, filename = 'copilot_report.doc') {
+    function Export2Word(texts, filename = 'Rapid Course Prototype.doc') {
         const head = "<head><meta charset='utf-8'></head>";
         const body = "<body>" + texts.map(t => "<div>" + t + "</div>").join("") + "</body>";
         const html = "<html>" + head + body + "</html>";
