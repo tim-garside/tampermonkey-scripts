@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Copilot Message Exporter - Rapid Course Prototype
+// @name         Copilot Message Exporter - RCP
 // @namespace    http://tampermonkey.net/
 // @version      2025-06-17
 // @description  try to take over the world!
