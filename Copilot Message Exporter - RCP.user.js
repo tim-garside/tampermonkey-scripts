@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Copilot Message Exporter - RCP
 // @namespace    http://tampermonkey.net/
-// @version      2025-06-17
-// @description  try to take over the world!
+// @version      0.6
+// @description  Exports Copilot messages formatted for Rapid Course Prototypes
 // @author       You
 // @match        https://m365.cloud.microsoft/chat/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cloud.microsoft
