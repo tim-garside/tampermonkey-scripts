@@ -6,8 +6,8 @@
 // @author       You
 // @match        https://m365.cloud.microsoft/chat/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=cloud.microsoft
-// @updateURL    https://github.com/tim-garside/tampermonkey-scripts/raw/main/Copilot%20Message%20Exporter%20-%20RCP.user.js
-// @downloadURL  https://github.com/tim-garside/tampermonkey-scripts/raw/main/Copilot%20Message%20Exporter%20-%20RCP.user.js
+// @updateURL    https://github.com/tim-garside/tampermonkey-scripts/raw/refs/heads/main/Copilot%20Message%20Exporter%20-%20RCP.user.js
+// @downloadURL  https://github.com/tim-garside/tampermonkey-scripts/raw/refs/heads/main/Copilot%20Message%20Exporter%20-%20RCP.user.js
 // @grant        none
 // ==/UserScript==
 
