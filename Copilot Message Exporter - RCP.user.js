@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copilot Message Exporter - RCP
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  Exports Copilot messages formatted for Rapid Course Prototypes
 // @author       You
 // @match        https://m365.cloud.microsoft/chat/*
@@ -18,7 +18,7 @@
     function injectExportButton() {
         if (document.querySelector("#export-copilot-to-word")) return;
 
-        const nav = document.querySelector('div[class^="navBarPolishedContainerNewHeader"]');
+        const nav = document.querySelector('div[id="new-chat-div"]').parentElement;
         if (!nav) return;
 
         const button = document.createElement('button');
