@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Panopto Folder Transcript Downloader
 // @namespace    https://uoncapture.ap.panopto.com/
-// @version      0.2
+// @version      0.3
 // @description  Adds a banner button (next to Stats) to download edited captions/transcripts for all sessions in the folder and zip them.
 // @author       Tim Garside
 // @match        https://uoncapture.ap.panopto.com/Panopto/Pages/Sessions/*
@@ -14,15 +14,10 @@
 
 (function() {
     // ===== CONFIG =====
-    // const CLIENT_ID = 'YOUR_CLIENT_ID'; // <-- set your OAuth2 Client ID
-    // const SCOPE = 'openid api';
-    //const TOKEN_STORAGE_KEY = 'panopto_oauth_token';
-    //const TOKEN_EXPIRY_KEY = 'panopto_oauth_expires_at';
-    const ZIP_NAME_PREFIX = 'panopto-transcripts';
+    const ZIP_NAME_PREFIX = 'panopto';
 
     const siteBase = location.origin; // https://your.hosted.panopto.com
     const apiBase = `${siteBase}/Panopto/api/v1`;
-    //const oidcConfigUrl = `${siteBase}/Panopto/oauth2/.well-known/openid-configuration`;
 
     // ===== UTILITIES =====
     function sanitizeFileName(name) {
@@ -39,7 +34,7 @@
     }
 
     // ===== BANNER INJECTION (next to Stats button) =====
-    function injectBannerButton() {
+    function injectCaptionsButton() {
         const header = document.getElementById('headerWrapper');
         if (!header) return false;
 
@@ -48,7 +43,7 @@
 
         const btn = document.createElement('a');
         btn.href = '#';
-        btn.textContent = 'Download captions';
+        btn.textContent = 'Download Captions';
         btn.setAttribute('id', 'headerDownloadCaptionsLink');
         // Style to be visually consistent with banner actions
         btn.style.cssText = `
@@ -57,28 +52,46 @@
       color:#fff; text-decoration:none; font:600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
       background:transparent; backdrop-filter:saturate(120%);
     `;
-      btn.addEventListener('click', (e) => { e.preventDefault(); run(); });
+        btn.addEventListener('click', (e) => { e.preventDefault(); run('captions'); });
 
-      // Insert immediately after Stats button
-      statsBtn.parentNode.insertBefore(btn, statsBtn.nextSibling);
-      return true;
-  }
+        // Insert immediately after Stats button
+        statsBtn.parentNode.insertBefore(btn, statsBtn.nextSibling);
+        return true;
+    }
+    // ===== BANNER INJECTION (next to Stats button) =====
+    function injectTranscriptsButton() {
+        const header = document.getElementById('headerWrapper');
+        if (!header) return false;
+
+        const statsBtn = document.getElementById('headerStatsLink');
+        if (!statsBtn) return false;
+
+        const btn = document.createElement('a');
+        btn.href = '#';
+        btn.textContent = 'Download Transcripts';
+        btn.setAttribute('id', 'headerDownloadTranscriptsLink');
+        // Style to be visually consistent with banner actions
+        btn.style.cssText = `
+      display:inline-block; margin-left:12px; padding:6px 12px;
+      border:1px solid rgba(255,255,255,0.7); border-radius:18px;
+      color:#fff; text-decoration:none; font:600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
+      background:transparent; backdrop-filter:saturate(120%);
+    `;
+        btn.addEventListener('click', (e) => { e.preventDefault(); run('transcripts'); });
+
+        // Insert immediately after Stats button
+        statsBtn.parentNode.insertBefore(btn, statsBtn.nextSibling);
+        return true;
+    }
 
     // ===== MAIN FLOW =====
-    async function run() {
+    async function run(button) {
         try {
             const folderId = getFolderIdFromHash();
             if (!folderId) {
                 alert('No folderID found in the URL fragment. Expected: #folderID="GUID"');
                 return;
             }
-
-            //const token = await getAccessToken();
-
-            // Fetch folder name (for ZIP filename)
-            // const folder = await getFolder(folderId);
-            //console.log(folder);
-
 
             // List sessions
             const sessions = await listAllSessions(folderId);
@@ -100,16 +113,18 @@
 
                 //const session = await getSession(deliveryId);
                 const sessionName = sanitizeFileName(s.Name || `session-${deliveryId}`);
-                console.log(sessionName)
-
                 const urls = s.Urls || {};
                 const captionUrl = urls.CaptionDownloadUrl;
-                console.log(captionUrl)
                 if (!captionUrl) continue;
 
                 const raw = await fetchCaption(captionUrl);
-                //const transcript = srtOrVttToTranscript(raw); // produce clean text (edited captions/transcripts preferred)
-                zip.file(`${sessionName}.txt`, raw, { binary: false });
+                let transcript ='';
+                if (button == 'transcripts') {
+                    transcript = srtOrVttToTranscript(raw); // produce clean text (edited captions/transcripts preferred)
+                } else {
+                    transcript = raw;
+                }
+                zip.file(`${sessionName}.txt`, transcript, { binary: false });
                 added++;
             }
 
@@ -119,7 +134,7 @@
             }
 
             const timestamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-            const zipName = `${ZIP_NAME_PREFIX}-${shortFolderName}-${timestamp}.zip`;
+            const zipName = `${ZIP_NAME_PREFIX}-${button}-${shortFolderName}-${timestamp}.zip`;
 
             // Example: Generate and download a zip file
             zip.generateAsync({type:"blob"})
@@ -142,40 +157,6 @@
             alert(`Error: ${err.message}`);
         }
     }
-
-    // ===== OAUTH (Implicit Grant) =====
-    /*async function getAccessToken() {
-    const now = Date.now();
-    const existing = localStorage.getItem(TOKEN_STORAGE_KEY);
-    const expiresAt = Number(localStorage.getItem(TOKEN_EXPIRY_KEY) || 0);
-    if (existing && now < (expiresAt - 30000)) return existing;
-
-    // Handle redirect result
-    if (location.hash.includes('access_token=')) {
-      const params = new URLSearchParams(location.hash.replace(/^#/, ''));
-      const token = params.get('access_token');
-      const ttl = Number(params.get('expires_in') || '3600');
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + ttl * 1000).toString());
-      history.replaceState(null, '', location.pathname + location.search);
-      return token;
-    }
-
-    // Discover endpoints
-    const config = await (await fetch(oidcConfigUrl, { credentials: 'include' })).json();
-    const authorize = config.authorization_endpoint;
-
-    const redirectUri = location.href; // must be registered in OAuth client
-    const authUrl = new URL(authorize);
-    authUrl.searchParams.set('client_id', CLIENT_ID);
-    authUrl.searchParams.set('response_type', 'token');
-    authUrl.searchParams.set('redirect_uri', redirectUri);
-    authUrl.searchParams.set('scope', SCOPE);
-    authUrl.searchParams.set('state', Math.random().toString(36).slice(2));
-
-    location.assign(authUrl.toString());
-    return new Promise(() => {}); // function resumes after redirect
-  }*/
 
     // ===== API CALLS =====
     async function getFolder(folderId) {
@@ -215,7 +196,6 @@
             allSessions.push(...items);
             // Check if there are more pages
             hasMore = items.length === pageSize;
-            console.log(hasMore);
             page++;
         }
         return allSessions;
@@ -233,37 +213,78 @@
 
     // ===== CAPTION NORMALIZATION =====
     // Convert SRT/VTT to plain transcript text by stripping indices & timestamps; if already transcript, return as-is.
+
     function srtOrVttToTranscript(text) {
+        // If no timestamps or WEBVTT header, return as-is
         if (!/-->\s*\d{2}:\d{2}:\d{2}/.test(text) && !/WEBVTT/i.test(text)) {
-            return text; // Panopto transcript .txt (edited) usually arrives with no timestamps
+            return text;
         }
+
         const lines = text.split(/\r?\n/);
         const out = [];
+
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
-            if (/^\d+$/.test(line)) continue; // numeric index
-            if (/-->\s*/.test(line)) continue; // timestamp cue
-            if (/^WEBVTT/.test(line)) continue; // header
+
+            // Skip numeric index lines
+            if (/^\d+$/.test(line)) continue;
+
+            // Skip timestamp lines (handles SRT and VTT)
+            if (/^\d{2}:\d{2}:\d{2}[.,]\d{3}\s+-->\s+\d{2}:\d{2}:\d{2}[.,]\d{3}/.test(line)) continue;
+
+            // Skip WEBVTT header
+            if (/^WEBVTT/i.test(line)) continue;
+
+            // Skip empty lines
             if (!line) continue;
+
+            // Remove position/cue settings if present
             out.push(line.replace(/\s*position:\d+%.*$/i, '').trim());
         }
-        return out.join('\n').replace(/\n{3,}/g, '\n\n');
+
+        let transcript = out.join('\n').replace(/\n{3,}/g, '\n\n');
+
+        // ===== NORMALIZE PUNCTUATION & SPACING =====
+        transcript = transcript
+            .replace(/\s{2,}/g, ' ') // collapse multiple spaces
+            .replace(/([,.!?])\s*/g, '$1 ') // ensure space after punctuation
+            .replace(/\s+([,.!?])/g, '$1') // remove space before punctuation
+            .replace(/,+/g, ',') // collapse multiple commas
+            .replace(/\.{4,}/g, '...') // normalize ellipses
+            .trim();
+
+        return transcript;
     }
+
 
     // ===== INIT =====
     // Try banner injection first; if we can't locate header elements, fall back to floating button.
-    const placed = injectBannerButton();
-    if (!placed) {
+    const placed1 = injectCaptionsButton();
+    const placed2 = injectTranscriptsButton();
+    if (!placed1) {
         // Fallback floating button for pages without the banner structure
         const fallback = document.createElement('button');
-        fallback.textContent = 'Download all captions';
+        fallback.textContent = 'Download all Captions';
         fallback.style.cssText = `
       position: fixed; z-index: 99999; right: 20px; bottom: 20px;
       padding: 10px 14px; background:#0078d4; color:#fff; border:none; border-radius:6px;
       cursor:pointer; font: 600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     `;
-      fallback.addEventListener('click', run);
-      document.body.appendChild(fallback);
-  }
+        fallback.addEventListener('click', run('captions'));
+        document.body.appendChild(fallback);
+    }
+    if (!placed2) {
+        // Fallback floating button for pages without the banner structure
+        const fallback = document.createElement('button');
+        fallback.textContent = 'Download all Transcripts';
+        fallback.style.cssText = `
+      position: fixed; z-index: 99999; right: 20px; bottom: 20px;
+      padding: 10px 14px; background:#0078d4; color:#fff; border:none; border-radius:6px;
+      cursor:pointer; font: 600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    `;
+        fallback.addEventListener('click', run('transcripts'));
+        document.body.appendChild(fallback);
+    }
 })();
