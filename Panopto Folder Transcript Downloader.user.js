@@ -270,32 +270,6 @@
 
     // ===== INIT =====
     // Try banner injection first; if we can't locate header elements, fall back to floating button.
-    const placed1 = injectCaptionsButton();
-    const placed2 = injectTranscriptsButton();
-    if (!placed1) {
-        // Fallback floating button for pages without the banner structure
-        const fallback = document.createElement('button');
-        fallback.textContent = 'Download all Captions';
-        fallback.style.cssText = `
-      position: fixed; z-index: 99999; right: 20px; bottom: 20px;
-      padding: 10px 14px; background:#0078d4; color:#fff; border:none; border-radius:6px;
-      cursor:pointer; font: 600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    `;
-        fallback.addEventListener('click', run('captions'));
-        document.body.appendChild(fallback);
-    }
-    if (!placed2) {
-        // Fallback floating button for pages without the banner structure
-        const fallback = document.createElement('button');
-        fallback.textContent = 'Download all Transcripts';
-        fallback.style.cssText = `
-      position: fixed; z-index: 99999; right: 20px; bottom: 20px;
-      padding: 10px 14px; background:#0078d4; color:#fff; border:none; border-radius:6px;
-      cursor:pointer; font: 600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    `;
-        fallback.addEventListener('click', run('transcripts'));
-        document.body.appendChild(fallback);
-    }
+    injectCaptionsButton();
+    injectTranscriptsButton();
 })();
