@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Panopto Folder Transcript Downloader
 // @namespace    https://uoncapture.ap.panopto.com/
-// @version      0.3
+// @version      0.4
 // @description  Adds a banner button (next to Stats) to download edited captions/transcripts for all sessions in the folder and zip them.
 // @author       Tim Garside
 // @match        https://uoncapture.ap.panopto.com/Panopto/Pages/Sessions/*
@@ -52,7 +52,7 @@
       color:#fff; text-decoration:none; font:600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
       background:transparent; backdrop-filter:saturate(120%);
     `;
-        btn.addEventListener('click', (e) => { e.preventDefault(); run('captions'); });
+         btn.addEventListener('click', (e) => {e.preventDefault(); run('captions');});
 
         // Insert immediately after Stats button
         statsBtn.parentNode.insertBefore(btn, statsBtn.nextSibling);
@@ -77,15 +77,27 @@
       color:#fff; text-decoration:none; font:600 13px/1.3 Segoe UI, Roboto, Arial, sans-serif;
       background:transparent; backdrop-filter:saturate(120%);
     `;
-        btn.addEventListener('click', (e) => { e.preventDefault(); run('transcripts'); });
+        btn.addEventListener('click', (e) => {e.preventDefault(); run('transcripts');});
 
         // Insert immediately after Stats button
         statsBtn.parentNode.insertBefore(btn, statsBtn.nextSibling);
         return true;
     }
 
+
+    function showLoading() {
+        const el = document.getElementById('loadingMessage');
+         if (el) el.style.display = 'block'; // or 'block' depending on your CSS
+    }
+
+    function hideLoading() {
+        const el = document.getElementById('loadingMessage');
+        if (el) el.style.display = 'none';
+    }
+
     // ===== MAIN FLOW =====
     async function run(button) {
+        showLoading();
         try {
             const folderId = getFolderIdFromHash();
             if (!folderId) {
@@ -95,7 +107,6 @@
 
             // List sessions
             const sessions = await listAllSessions(folderId);
-            console.log(sessions);
             const rawFolderName = sanitizeFileName(sessions[0].FolderDetails.Name || 'folder');
             const shortFolderName = truncate(rawFolderName, 30);
             if (!sessions.length) {
@@ -150,7 +161,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             });
-
+            hideLoading();
             alert(`Downloaded ${added} transcript(s) in ${zipName}`);
         } catch (err) {
             console.error(err);
