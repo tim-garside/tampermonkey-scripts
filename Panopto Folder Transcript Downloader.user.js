@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Panopto Folder Transcript Downloader
 // @namespace    https://uoncapture.ap.panopto.com/
-// @version      0.4
+// @version      0.5
 // @description  Adds a banner button (next to Stats) to download edited captions/transcripts for all sessions in the folder and zip them.
 // @author       Tim Garside
 // @match        https://uoncapture.ap.panopto.com/Panopto/Pages/Sessions/*
